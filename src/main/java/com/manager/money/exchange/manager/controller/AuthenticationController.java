@@ -38,7 +38,7 @@ public class AuthenticationController {
     @PostMapping
     public ResponseEntity<TokenDTO> login(@RequestBody @Valid LoginDTO dto) {
         var auth = manager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.login().trim().toLowerCase(), dto.senha()));
+                new UsernamePasswordAuthenticationToken(dto.login().trim().toLowerCase(), dto.senha().trim()));
         return ResponseEntity.ok(new TokenDTO(tokenService.gerarToken((User) auth.getPrincipal())));
     }
 
@@ -49,7 +49,13 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new CampoErro("login", "Esse login já está em uso"));
         }
-        userRepository.save(new User(login, encoder.encode(dto.senha())));
+
+        if (dto.senha().contains(" ")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new CampoErro("senha", "A senha não pode conter espaços em branco"));
+        }
+
+        userRepository.save(new User(login, encoder.encode(dto.senha().trim())));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
