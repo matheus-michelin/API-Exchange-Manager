@@ -6,6 +6,6 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
-public record MoneyAddDTO(@Positive double amount, @NotNull @PastOrPresent LocalDate date) {
+public record AddMoneyDTO(@Positive double amount, @NotNull @PastOrPresent LocalDate date) {
 
 }

@@ -2,6 +2,7 @@ package com.manager.money.exchange.manager.DTO.AuthenticationDTOS;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public record UserDTO(
         @NotBlank(message = "Login é obrigatório")
@@ -10,4 +11,5 @@ public record UserDTO(
         String login,
 
         @NotBlank(message = "Senha é obrigatória")
-        String senha) {}
+        @Size(min = 8, max = 64, message = "A senha deve ter de 8 a 64 caracteres")
+        String senha){}
