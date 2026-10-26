@@ -23,14 +23,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private final Cache<String, Bucket> buckets = Caffeine.newBuilder()
             .maximumSize(100_000)
-            .expireAfterAccess(2, TimeUnit.MINUTES)
+            .expireAfterAccess(10, TimeUnit.MINUTES) // Aumentado para respeitar janelas maiores (ex: 5 min)
             .build();
 
     private record RouteRule(String path, int capacity, long windowMs) {}
 
     private static final List<RouteRule> ROUTE_RULES = List.of(
-            new RouteRule("/login/cadastro", 3, 60_000),
-            new RouteRule("/login", 5, 60_000),
+            new RouteRule("/login/cadastro", 3, 300_000),
+            new RouteRule("/login", 5, 300_000),
             new RouteRule("/geral/extrato", 10, 60_000),
             new RouteRule("/geral/adicionar", 30, 60_000),
             new RouteRule("/geral/subtrair", 30, 60_000)
@@ -66,6 +66,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String key = byUser ? "user:" + auth.getName() + ":" + uri
                 : (login ? "login:" : "ip:") + clientIp + ":" + uri;
 
+
         Bucket bucket = buckets.get(key, k -> new Bucket(capacity, windowMs));
         long wait = bucket.tryConsume();
 
@@ -78,31 +79,5 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return;
         }
         chain.doFilter(req, res);
-    }
-
-    static final class Bucket {
-        private final int capacity;
-        private final long windowNanos;
-        private final double perNano;
-        private double tokens;
-        private long last = System.nanoTime();
-
-        Bucket(int capacity, long windowMs) {
-            this.capacity = capacity;
-            this.windowNanos = windowMs * 1_000_000L;
-            this.perNano = (double) capacity / windowNanos;
-            this.tokens = capacity;
-        }
-
-        synchronized long tryConsume() {
-            long now = System.nanoTime();
-            tokens = Math.min(capacity, tokens + (now - last) * perNano);
-            last = now;
-            if (tokens >= 1) {
-                tokens--;
-                return 0;
-            }
-            return (long) Math.ceil((1.0 - tokens) / perNano / 1_000_000_000d);
-        }
     }
 }
