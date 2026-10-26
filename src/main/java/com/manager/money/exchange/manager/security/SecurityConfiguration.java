@@ -1,5 +1,6 @@
 package com.manager.money.exchange.manager.security;
 
+import com.manager.money.exchange.manager.RateLimiter.RateLimitFilter;
 import com.manager.money.exchange.manager.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,8 +23,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfiguration {
 
-    @Autowired
-    private SecurityFilter securityFilter;
+    private final RateLimitFilter rateLimitFilter;
+    private final SecurityFilter securityFilter;
+
+    public SecurityConfiguration(RateLimitFilter rateLimitFilter, SecurityFilter securityFilter) {
+        this.rateLimitFilter = rateLimitFilter;
+        this.securityFilter = securityFilter;
+    }
+
 
     @Bean
     SecurityFilterChain chain(HttpSecurity http) throws Exception {
@@ -34,6 +41,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/login", "/login/cadastro").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitFilter, SecurityFilter.class)
                 .build();
     }
 

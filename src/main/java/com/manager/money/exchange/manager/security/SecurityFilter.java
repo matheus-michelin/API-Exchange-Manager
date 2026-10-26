@@ -1,5 +1,6 @@
 package com.manager.money.exchange.manager.security;
 
+import com.manager.money.exchange.manager.Repository.MoneyInfoRepository;
 import com.manager.money.exchange.manager.Repository.UserRepository;
 import com.manager.money.exchange.manager.security.token.TokenService;
 import jakarta.servlet.FilterChain;
@@ -17,11 +18,16 @@ import java.io.IOException;
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private TokenService tokenService;
+    //Autowired
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserRepository repository;
+    //Autowired
+    private final UserRepository repository;
+
+    private SecurityFilter(TokenService tokenService, UserRepository repository) {
+        this.tokenService = tokenService;
+        this.repository = repository;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
