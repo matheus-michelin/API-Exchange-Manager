@@ -28,7 +28,7 @@ public class MoneyInfoService {
     private final ValidationService validationService;
 
     //Autowired - Same thing but more secure
-    private MoneyInfoService(MoneyInfoRepository repository, MoneyAddRepository moneyAddRepository, ValidationService validationService) {
+    public MoneyInfoService(MoneyInfoRepository repository, MoneyAddRepository moneyAddRepository, ValidationService validationService) {
         this.repository = repository;
         this.moneyAddRepository = moneyAddRepository;
         this.validationService = validationService;
