@@ -14,9 +14,9 @@ import java.util.Optional;
 
 @Component
 public class AddMoneyValidation implements IValidationStrategy<AddMoneyDTO> {
-
+    //Autowired
     private final MoneyInfoRepository repository;
-
+    //Autowired - Same thing but more secure
     public AddMoneyValidation(MoneyInfoRepository repository) {
         this.repository = repository;
     }

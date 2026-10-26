@@ -14,9 +14,12 @@ import java.util.Optional;
 @Component
 public class ValidationInitialMoney implements IValidationStrategy<InitialMoneyDTO> {
 
-    @Autowired
-    private MoneyInfoRepository repository;
-
+    //Autowired
+    private final MoneyInfoRepository repository;
+    //Autowired - Same thing but more secure
+    private ValidationInitialMoney(MoneyInfoRepository moneyInfoRepository) {
+        this.repository = moneyInfoRepository;
+    };
 
     @Override
     public Class<InitialMoneyDTO> supports() {

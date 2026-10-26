@@ -13,15 +13,17 @@ import java.util.Optional;
 
 @Component
 public class RemoveMoneyValidation implements IValidationStrategy<RemoveMoneyDTO> {
-
+    //Autowired
     private final MoneyInfoRepository repository;
 
-    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000");
-
-
+    //Autowired - Same thing but more secure
     public RemoveMoneyValidation(MoneyInfoRepository repository) {
         this.repository = repository;
     }
+
+
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000");
+
 
     @Override
     public Class<RemoveMoneyDTO> supports() { return RemoveMoneyDTO.class; }

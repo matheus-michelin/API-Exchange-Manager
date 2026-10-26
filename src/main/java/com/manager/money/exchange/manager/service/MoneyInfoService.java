@@ -20,14 +20,19 @@ import java.util.List;
 @Service
 public class MoneyInfoService {
 
-    @Autowired
-    private MoneyInfoRepository repository;
+    //Autowired
+    private final MoneyInfoRepository repository;
+    //Autowired
+    private final MoneyAddRepository moneyAddRepository;
+    //Autowired
+    private final ValidationService validationService;
 
-    @Autowired
-    private MoneyAddRepository moneyAddRepository;
-
-    @Autowired
-    private ValidationService validationService;
+    //Autowired - Same thing but more secure
+    private MoneyInfoService(MoneyInfoRepository repository, MoneyAddRepository moneyAddRepository, ValidationService validationService) {
+        this.repository = repository;
+        this.moneyAddRepository = moneyAddRepository;
+        this.validationService = validationService;
+    }
 
     @Transactional
     public ResponseEntity<?> initialMoney(InitialMoneyDTO dto, User user) {

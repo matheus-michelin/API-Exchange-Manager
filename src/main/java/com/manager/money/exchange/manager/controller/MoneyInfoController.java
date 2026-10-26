@@ -18,8 +18,12 @@ import java.util.List;
 @RequestMapping("/geral")
 public class MoneyInfoController {
 
-    @Autowired
-    private MoneyInfoService service;
+    //Autowired
+    private final MoneyInfoService service;
+    //Autowired - Same thing but more secure
+    public MoneyInfoController(MoneyInfoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<?> postMoneyInfo(@RequestBody @Valid InitialMoneyDTO dto, @AuthenticationPrincipal User user) {
