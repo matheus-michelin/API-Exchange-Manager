@@ -17,7 +17,7 @@ public class ValidationInitialMoney implements IValidationStrategy<InitialMoneyD
     //Autowired
     private final MoneyInfoRepository repository;
     //Autowired - Same thing but more secure
-    private ValidationInitialMoney(MoneyInfoRepository moneyInfoRepository) {
+    public ValidationInitialMoney(MoneyInfoRepository moneyInfoRepository) {
         this.repository = moneyInfoRepository;
     };
 
