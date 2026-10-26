@@ -1,0 +1,7 @@
+ALTER TABLE money
+ALTER COLUMN money_total TYPE NUMERIC(19,2),
+    ALTER COLUMN money_qnt   TYPE NUMERIC(19,2);
+
+ALTER TABLE money_add
+ALTER COLUMN amount        TYPE NUMERIC(19,2),
+    ALTER COLUMN balance_after TYPE NUMERIC(19,2);

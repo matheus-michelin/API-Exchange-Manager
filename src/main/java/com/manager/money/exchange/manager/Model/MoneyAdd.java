@@ -2,6 +2,7 @@ package com.manager.money.exchange.manager.Model;
 
 import com.manager.money.exchange.manager.User.User;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -18,9 +19,12 @@ public class MoneyAdd {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private double amount;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal amount;
 
-    private double balanceAfter;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal balanceAfter;
+
 
     private Instant createdAt = Instant.now();
 
@@ -28,23 +32,24 @@ public class MoneyAdd {
 
     private LocalDate receivedOn;
 
-    public MoneyAdd(User user, double amount, LocalDate receivedOn, double balanceAfter) {
+    public MoneyAdd(User user, BigDecimal amount, LocalDate receivedOn, BigDecimal balanceAfter) { /* corpo igual */
         this.user = user;
         this.amount = amount;
         this.receivedOn = receivedOn;
         this.balanceAfter = balanceAfter;
+
     }
 
-    public double getAmount() {
+
+    public BigDecimal getAmount() {
         return amount;
     }
-
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public double getBalanceAfter() {
+    public BigDecimal getBalanceAfter() {
         return balanceAfter;
     }
 

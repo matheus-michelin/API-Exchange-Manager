@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Component
@@ -20,7 +21,7 @@ public class AddMoneyValidation implements IValidationStrategy<AddMoneyDTO> {
         this.repository = repository;
     }
 
-    private static final double MAX_AMOUNT = 1_000_000_000d;
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000");
 
 
     @Override
@@ -30,8 +31,8 @@ public class AddMoneyValidation implements IValidationStrategy<AddMoneyDTO> {
 
     @Override
     public Optional<ValidationError> validate(AddMoneyDTO dto, User user) {
-        if (!Double.isFinite(dto.amount()) || dto.amount() <= 0 || dto.amount() > MAX_AMOUNT)
-        return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor inválido ou acima do limite"));
+        if (dto.amount().signum() <= 0 || dto.amount().compareTo(MAX_AMOUNT) > 0)
+            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor inválido ou acima do limite"));
 
 
         if (repository.findByUser(user).isEmpty())

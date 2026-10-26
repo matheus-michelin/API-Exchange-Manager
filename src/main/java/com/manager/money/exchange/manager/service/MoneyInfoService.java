@@ -62,7 +62,7 @@ public class MoneyInfoService {
         var moneyInfo = repository.findByUser(user).orElseThrow();
 
 
-        moneyInfo.setMoneyTotal(moneyInfo.getMoneyTotal() + dto.amount());
+        moneyInfo.setMoneyTotal(moneyInfo.getMoneyTotal().add(dto.amount()));
         repository.save(moneyInfo);
         moneyAddRepository.save(new MoneyAdd(user, dto.amount(), dto.date(), moneyInfo.getMoneyTotal()));
 
@@ -85,9 +85,9 @@ public class MoneyInfoService {
 
         var moneyInfo = repository.findByUser(user).orElseThrow();
 
-        moneyInfo.setMoneyTotal(moneyInfo.getMoneyTotal() - dto.amount());
+        moneyInfo.setMoneyTotal(moneyInfo.getMoneyTotal().subtract(dto.amount()));
         repository.save(moneyInfo);
-        moneyAddRepository.save(new MoneyAdd(user, -dto.amount(), dto.date(), moneyInfo.getMoneyTotal()));
+        moneyAddRepository.save(new MoneyAdd(user, dto.amount().negate(), dto.date(), moneyInfo.getMoneyTotal()));
 
         return ResponseEntity.ok(new InfoMoneyResponseDTO(moneyInfo.getMoneyTotal()));
     }

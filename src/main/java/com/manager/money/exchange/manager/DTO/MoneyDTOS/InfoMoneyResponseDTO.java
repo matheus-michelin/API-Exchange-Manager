@@ -1,3 +1,5 @@
 package com.manager.money.exchange.manager.DTO.MoneyDTOS;
 
-public record InfoMoneyResponseDTO(double moneyTotal) {}
+import java.math.BigDecimal;
+
+public record InfoMoneyResponseDTO(BigDecimal moneyTotal) {}

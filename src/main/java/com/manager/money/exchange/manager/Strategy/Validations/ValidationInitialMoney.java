@@ -25,7 +25,7 @@ public class ValidationInitialMoney implements IValidationStrategy<InitialMoneyD
 
     @Override
     public Optional<ValidationError> validate(InitialMoneyDTO dto, User user) {
-        if (!Double.isFinite(dto.moneyQnt()))
+        if (dto.moneyQnt() == null || dto.moneyQnt().signum() < 0)
             return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor inválido"));
 
         if (repository.findByUser(user).isPresent())

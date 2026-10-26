@@ -8,6 +8,7 @@ import com.manager.money.exchange.manager.User.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Component
@@ -15,7 +16,7 @@ public class RemoveMoneyValidation implements IValidationStrategy<RemoveMoneyDTO
 
     private final MoneyInfoRepository repository;
 
-    private static final double MAX_AMOUNT = 1_000_000_000d;
+    private static final BigDecimal MAX_AMOUNT = new BigDecimal("1000000000");
 
 
     public RemoveMoneyValidation(MoneyInfoRepository repository) {
@@ -31,8 +32,11 @@ public class RemoveMoneyValidation implements IValidationStrategy<RemoveMoneyDTO
         if (moneyInfo == null)
             return Optional.of(new ValidationError(HttpStatus.CONFLICT, "Saldo inicial não registrado"));
 
-        if (!Double.isFinite(dto.amount()) || dto.amount() > moneyInfo.getMoneyTotal())
-            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+        if(dto.amount().compareTo(moneyInfo.getMoneyTotal()) > 0)
+        return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+
+        if (dto.amount().compareTo(MAX_AMOUNT) > 0)
+            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor acima do limite por operação"));
 
         return Optional.empty();
     }

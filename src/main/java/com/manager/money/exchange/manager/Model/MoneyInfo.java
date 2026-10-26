@@ -2,6 +2,7 @@ package com.manager.money.exchange.manager.Model;
 
 import com.manager.money.exchange.manager.User.User;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity(name = "MoneyInfo")
 @Table(name = "money")
@@ -13,9 +14,11 @@ public class MoneyInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private double moneyQnt;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal moneyQnt;
 
-    private double moneyTotal;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal moneyTotal;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "user_id", unique = true)
@@ -33,23 +36,16 @@ public class MoneyInfo {
         this.user = user;
     }
 
-    public double getMoneyQnt() {
-        return moneyQnt;
-    }
-
-    public void setMoneyQnt(double moneyQnt) {
-        this.moneyQnt = moneyQnt;
-    }
-
     public Long getId() {
         return id;
     }
 
-    public double getMoneyTotal() {
-        return moneyTotal;
-    }
+    public BigDecimal getMoneyQnt() { return moneyQnt; }
+    public void setMoneyQnt(BigDecimal moneyQnt) { this.moneyQnt = moneyQnt; }
+    public BigDecimal getMoneyTotal() { return moneyTotal; }
+    public void setMoneyTotal(BigDecimal moneyTotal) { this.moneyTotal = moneyTotal; }
 
-    public void setMoneyTotal(double moneyTotal) {
-        this.moneyTotal = moneyTotal;
-    }
+
+
+
 }
