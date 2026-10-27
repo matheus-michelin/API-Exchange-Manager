@@ -1,5 +1,6 @@
 package com.manager.money.exchange.manager.service;
 
+import com.manager.money.exchange.manager.DTO.AuthenticationDTOS.CampoErro;
 import com.manager.money.exchange.manager.DTO.MoneyDTOS.*;
 import com.manager.money.exchange.manager.Model.MoneyAdd;
 import com.manager.money.exchange.manager.Model.MoneyInfo;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,8 @@ public class MoneyInfoService {
     public ResponseEntity<?> initialMoney(InitialMoneyDTO dto, User user) {
         var error = validationService.validate(dto, user);
         if (error.isPresent())
-            return ResponseEntity.status(error.get().status()).body(error.get().message());
+            return ResponseEntity.status(error.get().status())
+                    .body(new CampoErro(error.get().campo(), error.get().message()));
 
         var m = new MoneyInfo();
         m.setUser(user);
@@ -62,7 +65,8 @@ public class MoneyInfoService {
 
         var error = validationService.validate(dto, user);
         if (error.isPresent())
-            return ResponseEntity.status(error.get().status()).body(error.get().message());
+            return ResponseEntity.status(error.get().status())
+                .body(new CampoErro(error.get().campo(), error.get().message()));
 
         var moneyInfo = repository.findByUser(user).orElseThrow();
 
@@ -74,11 +78,10 @@ public class MoneyInfoService {
         return ResponseEntity.ok(new InfoMoneyResponseDTO(moneyInfo.getMoneyTotal()));
     }
 
-    public ResponseEntity<List<AddMoneyResponseDTO>> getMoneyExtract(User user) {
-        var extract = moneyAddRepository.findByUserIdOrderByReceivedOnDescIdDesc(user.getId()).stream()
-                .map(a -> new AddMoneyResponseDTO(a.getAmount(), a.getReceivedOn(), a.getBalanceAfter()))
-                .toList();
-        return ResponseEntity.ok(extract);
+    public ResponseEntity<PageDTO<AddMoneyResponseDTO>> getMoneyExtract(User user, Pageable pageable) {
+        var p = moneyAddRepository.findByUserIdOrderByReceivedOnDescIdDesc(user.getId(), pageable)
+                .map(a -> new AddMoneyResponseDTO(a.getAmount(), a.getReceivedOn(), a.getBalanceAfter()));
+        return ResponseEntity.ok(new PageDTO<>(p.getContent(), p.getNumber(), p.getSize(), p.getTotalElements()));
     }
 
     @Transactional
@@ -86,7 +89,8 @@ public class MoneyInfoService {
 
         var error = validationService.validate(dto, user);
         if (error.isPresent())
-            return ResponseEntity.status(error.get().status()).body(error.get().message());
+            return ResponseEntity.status(error.get().status())
+                .body(new CampoErro(error.get().campo(), error.get().message()));
 
         var moneyInfo = repository.findByUser(user).orElseThrow();
 

@@ -1,13 +1,11 @@
 package com.manager.money.exchange.manager.controller;
 
-import com.manager.money.exchange.manager.DTO.MoneyDTOS.AddMoneyDTO;
-import com.manager.money.exchange.manager.DTO.MoneyDTOS.AddMoneyResponseDTO;
-import com.manager.money.exchange.manager.DTO.MoneyDTOS.InitialMoneyDTO;
-import com.manager.money.exchange.manager.DTO.MoneyDTOS.RemoveMoneyDTO;
+import com.manager.money.exchange.manager.DTO.MoneyDTOS.*;
 import com.manager.money.exchange.manager.User.User;
 import com.manager.money.exchange.manager.service.MoneyInfoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +47,11 @@ public class MoneyInfoController {
     }
 
     @GetMapping("/extrato")
-    public ResponseEntity<List<AddMoneyResponseDTO>> getMoneyExtact(@AuthenticationPrincipal User user) {
-        return service.getMoneyExtract(user);
+    public ResponseEntity<PageDTO<AddMoneyResponseDTO>> getMoneyExtact(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @AuthenticationPrincipal User user) {
+        return service.getMoneyExtract(user, PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 100)));
     }
 
 }
