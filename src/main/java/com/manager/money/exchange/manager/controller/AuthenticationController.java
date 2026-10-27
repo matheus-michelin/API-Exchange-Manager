@@ -36,26 +36,26 @@ public class AuthenticationController {
     private PasswordEncoder encoder;
 
     @PostMapping
-    public ResponseEntity<TokenDTO> login(@RequestBody @Valid LoginDTO dto) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO dto) {
+        if (dto.senha().contains(" "))
+            return ResponseEntity.badRequest().body(new CampoErro("senha", "A senha não pode conter espaços em branco"));
         var auth = manager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.login().trim().toLowerCase(), dto.senha().trim()));
+                new UsernamePasswordAuthenticationToken(dto.login().toLowerCase(), dto.senha()));
         return ResponseEntity.ok(new TokenDTO(tokenService.gerarToken((User) auth.getPrincipal())));
     }
 
     @PostMapping("/cadastro")
     public ResponseEntity<?> cadastrar(@RequestBody @Valid UserDTO dto) {
-        var login = dto.login().trim().toLowerCase();
+        var login = dto.login().toLowerCase();
         if (userRepository.existsByLogin(login)) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new CampoErro("login", "Esse login já está em uso"));
         }
-
         if (dto.senha().contains(" ")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new CampoErro("senha", "A senha não pode conter espaços em branco"));
         }
-
-        userRepository.save(new User(login, encoder.encode(dto.senha().trim())));
+        userRepository.save(new User(login, encoder.encode(dto.senha())));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

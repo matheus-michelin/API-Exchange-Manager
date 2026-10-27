@@ -32,11 +32,11 @@ public class AddMoneyValidation implements IValidationStrategy<AddMoneyDTO> {
     @Override
     public Optional<ValidationError> validate(AddMoneyDTO dto, User user) {
         if (dto.amount().signum() <= 0 || dto.amount().compareTo(MAX_AMOUNT) > 0)
-            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor inválido ou acima do limite"));
+            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "amount", "Valor inválido ou acima do limite"));
 
 
         if (repository.findByUser(user).isEmpty())
-            return Optional.of(new ValidationError(HttpStatus.CONFLICT,
+            return Optional.of(new ValidationError(HttpStatus.CONFLICT, "saldo",
                     "Saldo inicial não registrado"));
 
         return Optional.empty();

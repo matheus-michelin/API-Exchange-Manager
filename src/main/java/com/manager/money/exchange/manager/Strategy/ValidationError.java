@@ -2,4 +2,4 @@ package com.manager.money.exchange.manager.Strategy;
 
 import org.springframework.http.HttpStatus;
 
-public record ValidationError(HttpStatus status, String message) {}
+public record ValidationError(HttpStatus status, String campo, String message) {}

@@ -29,10 +29,10 @@ public class ValidationInitialMoney implements IValidationStrategy<InitialMoneyD
     @Override
     public Optional<ValidationError> validate(InitialMoneyDTO dto, User user) {
         if (dto.moneyQnt() == null || dto.moneyQnt().signum() < 0)
-            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor inválido"));
+            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "moneyQnt", "Valor inválido"));
 
         if (repository.findByUser(user).isPresent())
-            return Optional.of(new ValidationError(HttpStatus.CONFLICT, "Saldo inicial já registrado"));
+            return Optional.of(new ValidationError(HttpStatus.CONFLICT, "saldo", "Saldo inicial já registrado"));
 
         return Optional.empty();
     }

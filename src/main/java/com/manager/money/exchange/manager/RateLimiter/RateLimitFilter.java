@@ -75,7 +75,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
             res.setHeader("Retry-After", String.valueOf(wait));
             res.setCharacterEncoding("UTF-8");
             res.setContentType("application/json");
-            res.getWriter().write("{\"error\": \"Muitas requisições para este endpoint. Tente novamente em " + wait + "s.\"}");
+            res.getWriter().write("{\"campo\":null,\"mensagem\":\"Muitas requisições para este endpoint. Tente novamente em " + wait + "s.\"}");
             return;
         }
         chain.doFilter(req, res);

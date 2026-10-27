@@ -36,7 +36,12 @@ public class SecurityConfiguration {
     SecurityFilterChain chain(HttpSecurity http) throws Exception {
         return http.csrf(c -> c.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .exceptionHandling(e -> e.authenticationEntryPoint((req, res, ex) -> {
+                    res.setStatus(401);
+                    res.setCharacterEncoding("UTF-8");
+                    res.setContentType("application/json");
+                    res.getWriter().write("{\"campo\":null,\"mensagem\":\"Não autenticado\"}");
+                }))
                 .authorizeHttpRequests(r -> r
                         .requestMatchers(HttpMethod.POST, "/login", "/login/cadastro").permitAll()
                         .anyRequest().authenticated())

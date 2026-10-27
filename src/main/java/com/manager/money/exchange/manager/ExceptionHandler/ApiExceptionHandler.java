@@ -43,20 +43,20 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity treatamentJSONParseError(HttpMessageNotReadableException ex){
-        return ResponseEntity.badRequest().body("Erro na leitura, dados inválidos ou incompletos");
+    public ResponseEntity<CampoErro> treatamentJSONParseError(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest()
+                .body(new CampoErro(null, "Erro na leitura, dados inválidos ou incompletos"));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity tratarErroAcessoNegado() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado");
+    public ResponseEntity<CampoErro> tratarErroAcessoNegado() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new CampoErro(null, "Acesso negado"));
     }
 
 
     @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
-    public ResponseEntity<String> handleConflict() {
+    public ResponseEntity<CampoErro> handleConflict() {
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body("Operação simultânea detectada, tente novamente");
-
+                .body(new CampoErro(null, "Operação simultânea detectada, tente novamente"));
     }
 }

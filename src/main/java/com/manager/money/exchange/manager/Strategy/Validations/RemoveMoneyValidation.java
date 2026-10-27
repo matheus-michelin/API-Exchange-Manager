@@ -32,13 +32,13 @@ public class RemoveMoneyValidation implements IValidationStrategy<RemoveMoneyDTO
     public Optional<ValidationError> validate(RemoveMoneyDTO dto, User user) {
         var moneyInfo = repository.findByUser(user).orElse(null);
         if (moneyInfo == null)
-            return Optional.of(new ValidationError(HttpStatus.CONFLICT, "Saldo inicial não registrado"));
+            return Optional.of(new ValidationError(HttpStatus.CONFLICT, "saldo", "Cadastre o saldo inicial antes de movimentar"));
 
         if(dto.amount().compareTo(moneyInfo.getMoneyTotal()) > 0)
-        return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "saldo", "Saldo insuficiente"));
 
         if (dto.amount().compareTo(MAX_AMOUNT) > 0)
-            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "Valor acima do limite por operação"));
+            return Optional.of(new ValidationError(HttpStatus.BAD_REQUEST, "amount", "Valor acima do limite por operação"));
 
         return Optional.empty();
     }
