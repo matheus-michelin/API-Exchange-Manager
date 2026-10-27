@@ -1,9 +1,6 @@
 package com.manager.money.exchange.manager.DTO.MoneyDTOS;
 
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 
 import java.math.BigDecimal;
@@ -17,5 +14,9 @@ public record RemoveMoneyDTO(
 
         @NotNull
         @PastOrPresent
-        LocalDate date) {
+        LocalDate date,
+
+        @NotBlank
+        @Size(min = 3, max = 85, message = "A descrição deve ter entre 3 e 85 caracteres")
+                String description) {
 }
