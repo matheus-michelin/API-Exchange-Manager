@@ -22,6 +22,9 @@ import java.util.List;
 @Service
 public class MoneyInfoService {
 
+    //A tabela money_add também retira, não se engane quando ler o nome
+    //The table money_add also subtract, don't fool yourself when you read the name
+
     //Autowired
     private final MoneyInfoRepository repository;
     //Autowired
@@ -73,14 +76,14 @@ public class MoneyInfoService {
 
         moneyInfo.setMoneyTotal(moneyInfo.getMoneyTotal().add(dto.amount()));
         repository.save(moneyInfo);
-        moneyAddRepository.save(new MoneyAdd(user, dto.amount(), dto.date(), moneyInfo.getMoneyTotal()));
+        moneyAddRepository.save(new MoneyAdd(user, dto.amount(), dto.date(), moneyInfo.getMoneyTotal(), dto.description()));
 
         return ResponseEntity.ok(new InfoMoneyResponseDTO(moneyInfo.getMoneyTotal()));
     }
 
     public ResponseEntity<PageDTO<AddMoneyResponseDTO>> getMoneyExtract(User user, Pageable pageable) {
         var p = moneyAddRepository.findByUserIdOrderByReceivedOnDescIdDesc(user.getId(), pageable)
-                .map(a -> new AddMoneyResponseDTO(a.getAmount(), a.getReceivedOn(), a.getBalanceAfter()));
+                .map(a -> new AddMoneyResponseDTO(a.getAmount(), a.getReceivedOn(), a.getBalanceAfter(), a.getDescription()));
         return ResponseEntity.ok(new PageDTO<>(p.getContent(), p.getNumber(), p.getSize(), p.getTotalElements()));
     }
 
@@ -96,7 +99,7 @@ public class MoneyInfoService {
 
         moneyInfo.setMoneyTotal(moneyInfo.getMoneyTotal().subtract(dto.amount()));
         repository.save(moneyInfo);
-        moneyAddRepository.save(new MoneyAdd(user, dto.amount().negate(), dto.date(), moneyInfo.getMoneyTotal()));
+        moneyAddRepository.save(new MoneyAdd(user, dto.amount().negate(), dto.date(), moneyInfo.getMoneyTotal(), dto.description()));
 
         return ResponseEntity.ok(new InfoMoneyResponseDTO(moneyInfo.getMoneyTotal()));
     }

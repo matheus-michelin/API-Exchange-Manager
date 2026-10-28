@@ -1,0 +1,1 @@
+ALTER TABLE money_add ADD COLUMN description VARCHAR(255) NOT NULL DEFAULT '0';
