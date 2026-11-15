@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,17 +25,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfiguration {
 
     private final RateLimitFilter rateLimitFilter;
     private final SecurityFilter securityFilter;
 
+    /**
+     * Origens do front-end autorizadas a chamar a API (separadas por vírgula).
+     * Defina em application.properties, por exemplo:
+     *   app.cors.allowed-origins=http://localhost:3000,https://painel.seudominio.com
+     * Nunca use "*" aqui: o front envia o header Authorization.
+     */
     private final List<String> allowedOrigins;
 
     public SecurityConfiguration(RateLimitFilter rateLimitFilter,
                                  SecurityFilter securityFilter,
-                                 @Value("${app.cors.allowed-origins=http://localhost:3000,http://127.0.0.1:3000,http://127.0.0.1:5050,http://127.0.0.1:5051,http://127.0.0.1:5501,http://localhost:5501}")
+                                 @Value("${app.cors.allowed-origins:http://localhost:3000,http://127.0.0.1:3000}")
                                  List<String> allowedOrigins) {
         this.rateLimitFilter = rateLimitFilter;
         this.securityFilter = securityFilter;
@@ -57,7 +61,8 @@ public class SecurityConfiguration {
                     res.getWriter().write("{\"campo\":null,\"mensagem\":\"Não autenticado\"}");
                 }))
                 .authorizeHttpRequests(r -> r
-                        .requestMatchers(HttpMethod.POST, "/login", "/login/cadastro").permitAll()
+                        // /sair é aberta para ser idempotente; o controller confere o token sozinho.
+                        .requestMatchers(HttpMethod.POST, "/login", "/login/cadastro", "/sair").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(rateLimitFilter, SecurityFilter.class)
@@ -81,7 +86,11 @@ public class SecurityConfiguration {
         return source;
     }
 
-
+    /*
+     * SecurityFilter e RateLimitFilter são @Component e OncePerRequestFilter: o Spring Boot
+     * também os registraria como filtros do servlet container, fora da cadeia de segurança.
+     * Desativamos esse registro extra para que rodem somente dentro da cadeia, na ordem certa.
+     */
     @Bean
     FilterRegistrationBean<SecurityFilter> securityFilterRegistration(SecurityFilter filter) {
         var registration = new FilterRegistrationBean<>(filter);
