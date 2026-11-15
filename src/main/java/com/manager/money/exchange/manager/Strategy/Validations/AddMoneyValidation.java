@@ -5,7 +5,6 @@ import com.manager.money.exchange.manager.Repository.MoneyInfoRepository;
 import com.manager.money.exchange.manager.Strategy.IValidationStrategy;
 import com.manager.money.exchange.manager.Strategy.ValidationError;
 import com.manager.money.exchange.manager.User.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
