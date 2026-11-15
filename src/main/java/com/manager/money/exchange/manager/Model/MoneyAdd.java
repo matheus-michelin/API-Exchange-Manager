@@ -1,6 +1,7 @@
 package com.manager.money.exchange.manager.Model;
 
 import com.manager.money.exchange.manager.User.User;
+import com.manager.money.exchange.manager.security.EncryptedStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -27,7 +28,9 @@ public class MoneyAdd {
     @Column(precision = 19, scale = 2)
     private BigDecimal balanceAfter;
 
-    @Column(length = 85, nullable = false)
+    // Coluna maior (V8): o texto cifrado (v1:base64) é mais longo que os 85 caracteres originais.
+    @Column(length = 600, nullable = false)
+    @Convert(converter = EncryptedStringConverter.class)
     @Size(min = 3, max = 85)
     private String description;
 
