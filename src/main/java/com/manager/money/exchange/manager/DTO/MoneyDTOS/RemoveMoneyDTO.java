@@ -18,5 +18,6 @@ public record RemoveMoneyDTO(
 
         @NotBlank
         @Size(min = 3, max = 85, message = "A descrição deve ter entre 3 e 85 caracteres")
-                String description) {
+        @Pattern(regexp = "^[^\\p{Cc}\\u202A-\\u202E\\u2066-\\u2069]*$", message = "A descrição contém caracteres inválidos")
+        String description) {
 }
