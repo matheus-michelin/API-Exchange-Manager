@@ -2,6 +2,7 @@ package com.manager.money.exchange.manager.security;
 
 import com.manager.money.exchange.manager.Repository.MoneyInfoRepository;
 import com.manager.money.exchange.manager.Repository.UserRepository;
+import com.manager.money.exchange.manager.security.token.TokenRevocation;
 import com.manager.money.exchange.manager.security.token.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,9 +25,13 @@ public class SecurityFilter extends OncePerRequestFilter {
     //Autowired
     private final UserRepository repository;
 
-    public SecurityFilter(TokenService tokenService, UserRepository repository) {
+    //Autowired
+    private final TokenRevocation revocation;
+
+    public SecurityFilter(TokenService tokenService, UserRepository repository, TokenRevocation revocation) {
         this.tokenService = tokenService;
         this.repository = repository;
+        this.revocation = revocation;
     }
 
     @Override
@@ -34,8 +39,11 @@ public class SecurityFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws ServletException, IOException {
         var header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
-            tokenService.getSubject(header.substring(7))
-                    .flatMap(repository::findByLogin)
+            tokenService.verificar(header.substring(7))
+                    .filter(jwt -> !revocation.isRevoked(jwt.getId())) // token cancelado no "Sair"
+                    .flatMap(jwt -> repository.findByLogin(jwt.getSubject())
+                            // o id do token tem de ser o do usuário atual: cobre conta excluída e login recriado
+                            .filter(u -> u.getId() != null && u.getId().equals(jwt.getClaim("uid").asLong())))
                     .ifPresent(user -> SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())));
         }
